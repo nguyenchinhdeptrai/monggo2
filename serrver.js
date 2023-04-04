@@ -18,28 +18,40 @@ app.engine("hbs", exphbs.engine({
 app.set('view engine', 'hbs');
 app.set('views', './views');
 
-// app.get('/', async (req, res) => {
-//     const uri = 'mongodb+srv://chinhnvph23300:4kCJCuFBvz6r9xp9@cluster0.yrmlvp6.mongodb.net/Demo1234?retryWrites=true&w=majority';
-//     await mongoose.connect(uri);
-//     let arrSp = await SanPhamModel.find();
-//     console.log(arrSp);
-//     res.render('emptyView', {
-//         layout: 'home',
-//         arrSp: arrSp,
-//     });
-// })
 
-
+// get data
 app.get('/', async (req, res) => {
     const uri = 'mongodb+srv://chinhnvph23300:PEoGUuTokPCDDAzs@cluster0.yrmlvp6.mongodb.net/Demo1234?retryWrites=true&w=majority';
     await mongoose.connect(uri);
     let arrSp = await SanPhamModel.find().lean(); // chuyển đổi sang kiểu plain JavaScript object
-    console.log(arrSp);
     res.render('emptyView', {
         layout: 'home',
         arrSp: arrSp, // không cần gọi phương thức .map() nữa
     });
 });
+app.get('/showSearch', (req, res) => {
+    res.render('emptyView', {
+        layout:'search',
+    });
+})
+
+
+
+
+//search data 
+app.post('/search', async (req, res) => {
+    const uri = 'mongodb+srv://chinhnvph23300:PEoGUuTokPCDDAzs@cluster0.yrmlvp6.mongodb.net/Demo1234?retryWrites=true&w=majority';
+    const searchString = req.body.search;
+    await mongoose.connect(uri);
+    let searchData = await SanPhamModel.find({ name: searchString }).lean();
+    console.log(searchData + ' tìm kiếm 2 ');
+    console.log(searchString + " tìm kiếm");
+    res.render('emptyView', {
+        layout: 'home',
+        searchData: searchData,
+    })
+});
+
 
 //
 app.get('/add', (req, res) => {
@@ -97,13 +109,13 @@ app.post('/update', async function (req, res) {
 });
 
 //delete
-app.post('/delete',async function (req, res) {
+app.post('/delete', async function (req, res) {
     const uri = 'mongodb+srv://chinhnvph23300:PEoGUuTokPCDDAzs@cluster0.yrmlvp6.mongodb.net/Demo1234?retryWrites=true&w=majority';
     await mongoose.connect(uri).then(console.log('kết nối db thành công'));
     const id = req.body.hello;
     console.log(id + ' id xóa');
     try {
-        const deleteNhanVien = await SanPhamModel.deleteOne({_id:id,});
+        const deleteNhanVien = await SanPhamModel.deleteOne({ _id: id, });
         console.log(deleteNhanVien);
         res.redirect('/');
     } catch (err) {

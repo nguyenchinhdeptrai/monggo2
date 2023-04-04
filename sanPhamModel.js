@@ -11,7 +11,7 @@ const SanPhamSchema = new mongoose.Schema({
         required:true,
     },
     address:{
-        type:String,
+        type:Number,
         required:true,
     }
 
